@@ -2,7 +2,9 @@
 Student:	Jason Staley
 Date: 		11/5/2021
 Assignment: Assignment 10.2 – Capstone Project: Sprint 1
+Updated:    11/12/2021 - Assignment 11.2 – Capstone Project: Sprint 2 - adding the appropriate event handlers to make the application fully functional
 File Name: 	StaleyGradeBookApp.java
+Class:      Student.java
 
 University:	Bellevue University
 Class:		CIS505-T301 Intermediate Java Programming (2221-1)
@@ -20,25 +22,20 @@ Modified by J. Staley 2021
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import javafx.scene.control.ComboBox;
+import javafx.stage.Stage;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-
-import java.lang.reflect.Array;
+import java.io.*;
+import java.util.*;
 
 public class StaleyGradeBookApp extends Application{
 
@@ -144,14 +141,101 @@ public class StaleyGradeBookApp extends Application{
 
     //Method to view saved grade entries
     private void viewFormFields(){
-        //Content will be created in a future task
-        System.out.println("In the view method.");
-    }
+        
+        //Source: José Vidal https://www.youtube.com/watch?v=zKDmzKaAQro
+        //Modified by J. Staley 2021
 
+        //Create variable for file name
+        String fileName = "grades.csv";
+
+        //Create instance of new file
+        File file = new File(fileName);
+        
+        //Create instance of Student
+        Student studentView = new Student();
+
+        //Create a StringBuilder to append student data
+        StringBuilder students = new StringBuilder();
+
+        try {
+            //Create scanner object
+            Scanner inputStream = new Scanner(file);
+            inputStream.next();
+
+            //Loop through file
+            while(inputStream.hasNext()){
+
+                //Skip the header row
+                String data = inputStream.next();
+
+                //Split the csv file by "," and build a string array
+                String [] values = data.split(",");
+
+                //Set Student object fields
+                studentView.setFirstName(values[0]);
+                studentView.setLastName(values[1]);
+                studentView.setCourse(values[2]);
+                studentView.setGrade(values[3]);
+
+                //Append each object to the Stringbuilder and use the toString method of the Student class to format the data
+                students.append(studentView.toString());
+                students.append("\n");
+            }
+
+            //Set the results text area to the contents of the StringBuilder (.toString() method is necessary because setText requires a String constructor)
+            taResults.setText(students.toString());
+
+            //Close the file
+            inputStream.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+    
     //Method to save grade entries
     private void saveFormFields(){
-        //Content will be created in a future task
-        System.out.println("In the save method.");
+        
+        //Create instance of a Student object and load it with the data from the form fields
+        Student studentSave = new Student(tfFirstName.getText(), tfLastName.getText(), tfCourse.getText(), cbGrade.getValue());
+
+        //Create file and PrintWriter
+        File file = new File("grades.csv");
+        PrintWriter pw;
+        
+        try{
+
+            //Create a new PrintWriter object with a FileOutputStream that will append data to the file as it is added
+            pw = new PrintWriter(new FileOutputStream(file, true));
+      
+            //Create a header if the file is empty (header is only written on a new file)
+            if(file.length() == 0)
+            {
+                pw.print("firstName");
+                pw.print(",");
+                pw.print("lastName");
+                pw.print(",");
+                pw.print("course");
+                pw.print(",");
+                pw.print("grade");
+                pw.print("\n");
+            }
+
+            //Data from the Student oject is passed into the csv file
+            pw.print(studentSave.getFirstName());
+            pw.print(",");
+            pw.print(studentSave.getLastName());
+            pw.print(",");
+            pw.print(studentSave.getCourse());
+            pw.print(",");
+            pw.print(studentSave.getGrade());
+            pw.print("\n");
+            
+            pw.close();
+        }
+        catch(IOException ioe){
+            System.out.println("IOException has been thrown writing file.");
+        }
     }
   
   public static void main(String[] args) {
