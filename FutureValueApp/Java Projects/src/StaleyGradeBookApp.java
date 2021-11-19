@@ -3,6 +3,7 @@ Student:	Jason Staley
 Date: 		11/5/2021
 Assignment: Assignment 10.2 – Capstone Project: Sprint 1
 Updated:    11/12/2021 - Assignment 11.2 – Capstone Project: Sprint 2 - adding the appropriate event handlers to make the application fully functional
+            11/16/2021 - Assignment 12.3 – Capstone Project: Delivery - Review the remarks left under your peer-review and apply them to your solution
 File Name: 	StaleyGradeBookApp.java
 Class:      Student.java
 
@@ -141,55 +142,54 @@ public class StaleyGradeBookApp extends Application{
 
     //Method to view saved grade entries
     private void viewFormFields(){
-        
-        //Source: José Vidal https://www.youtube.com/watch?v=zKDmzKaAQro
-        //Modified by J. Staley 2021
+        //Verify the file exists before attempting to display per suggestion
+        if (file.exists()){
+            //Source: José Vidal https://www.youtube.com/watch?v=zKDmzKaAQro
+            //Modified by J. Staley 2021
 
-        //Create variable for file name
-        String fileName = "grades.csv";
+            //Create instance of Student
+            Student studentView = new Student();
 
-        //Create instance of new file
-        File file = new File(fileName);
-        
-        //Create instance of Student
-        Student studentView = new Student();
+            //Create a StringBuilder to append student data
+            StringBuilder students = new StringBuilder();
 
-        //Create a StringBuilder to append student data
-        StringBuilder students = new StringBuilder();
+            try {
+                //Create scanner object
+                Scanner inputStream = new Scanner(file);
+                inputStream.next();
 
-        try {
-            //Create scanner object
-            Scanner inputStream = new Scanner(file);
-            inputStream.next();
+                //Loop through file
+                while(inputStream.hasNext()){
 
-            //Loop through file
-            while(inputStream.hasNext()){
+                    //Skip the header row
+                    String data = inputStream.next();
 
-                //Skip the header row
-                String data = inputStream.next();
+                    //Split the csv file by "," and build a string array
+                    String [] values = data.split(",");
 
-                //Split the csv file by "," and build a string array
-                String [] values = data.split(",");
+                    //Set Student object fields
+                    studentView.setFirstName(values[0]);
+                    studentView.setLastName(values[1]);
+                    studentView.setCourse(values[2]);
+                    studentView.setGrade(values[3]);
 
-                //Set Student object fields
-                studentView.setFirstName(values[0]);
-                studentView.setLastName(values[1]);
-                studentView.setCourse(values[2]);
-                studentView.setGrade(values[3]);
+                    //Append each object to the Stringbuilder and use the toString method of the Student class to format the data
+                    students.append(studentView.toString());
+                    students.append("\n");
+                }
 
-                //Append each object to the Stringbuilder and use the toString method of the Student class to format the data
-                students.append(studentView.toString());
-                students.append("\n");
+                //Set the results text area to the contents of the StringBuilder (.toString() method is necessary because setText requires a String constructor)
+                taResults.setText(students.toString());
+
+                //Close the file
+                inputStream.close();
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
-
-            //Set the results text area to the contents of the StringBuilder (.toString() method is necessary because setText requires a String constructor)
-            taResults.setText(students.toString());
-
-            //Close the file
-            inputStream.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        }
+        else{
+            taResults.setText("No data to display.");
         }
     }
     
@@ -199,8 +199,7 @@ public class StaleyGradeBookApp extends Application{
         //Create instance of a Student object and load it with the data from the form fields
         Student studentSave = new Student(tfFirstName.getText(), tfLastName.getText(), tfCourse.getText(), cbGrade.getValue());
 
-        //Create file and PrintWriter
-        File file = new File("grades.csv");
+        //Create PrintWriter
         PrintWriter pw;
         
         try{
@@ -241,4 +240,6 @@ public class StaleyGradeBookApp extends Application{
   public static void main(String[] args) {
           launch(args);
       }
+      //Declare file for application
+      private File file = new File("grades.csv");
   }

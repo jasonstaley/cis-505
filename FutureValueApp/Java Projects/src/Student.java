@@ -2,6 +2,7 @@
 Student:	Jason Staley
 Date: 		11/11/2021
 Assignment: Assignment 11.2 – Capstone Project: Sprint 2 - Item 11
+Updated:    11/16/2021 - Assignment 12.3 – Capstone Project: Delivery - Review the remarks left under your peer-review and apply them to your solution
 File Name: 	Student.java
 
 University:	Bellevue University
@@ -81,7 +82,7 @@ public class Student {
 
     //override the toString() method
     public String toString(){
-        return "First name: " + firstName + "\nLast name: " + lastName + "\nCourse: " + course + "\nGrade: " + grade;
+        //Added extra line to end of display per suggestion
+        return "First name: " + firstName + "\nLast name: " + lastName + "\nCourse: " + course + "\nGrade: " + grade + "\n";
     }
-
 }
